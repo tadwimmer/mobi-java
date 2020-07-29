@@ -1,21 +1,15 @@
 package hu.webhejj.pdb;
 
 import hu.webhejj.pdb.mobi.ByteIO;
-import hu.webhejj.pdb.mobi.MobiAdapter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class PDBReader {
 	
-	protected static long DATE_OFFSET = -2082844800000L;
+	protected static long DATEOFFSET = -2082844800000L;
 
 	public PalmDataBase read(File file) throws IOException {
 		
@@ -99,26 +93,9 @@ public class PDBReader {
 
 	protected Date readDate(DataInputStream dis) throws IOException {
 		long time = dis.readInt();
-		return new Date(time * 1000 + DATE_OFFSET);
+		return new Date(time * 1000 + DATEOFFSET);
 	}
 	
-	public void dump(PrintStream out, PalmDataBase pdb) {
-		out.print("Name: "); out.println(pdb.getName());
-		out.print("Attributes: "); out.println(pdb.getAttributes());
-		out.print("Version: "); out.println(pdb.getVersion());
-		out.print("Creation date: "); out.println(pdb.getCreationDate());
-		out.print("Modification date: "); out.println(pdb.getModificationDate());
-		out.print("Last backup date: "); out.println(pdb.getLastBackupDate());
-		out.print("Modification number: "); out.println(pdb.getModificationNumber());
-		out.print("Type: "); out.println(pdb.getType());
-		out.print("Creator: "); out.println(pdb.getCreator());
-		out.print("Unique seed: "); out.println(pdb.getUniqueIdSeed());
-		out.println();
-		
-		for(PalmRecord record: pdb.getPalmRecords()) {
-			out.format("Record: id = %4d, attributes = %s, length = %d%n", record.getId(), record.getAttributes(),
-					record.getData() == null ? "null" : record.getData().length);
-		}
-	}
+
 
 }
