@@ -13,14 +13,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
-
-import static com.imhotek.pdb.Constants.*;
+import java.nio.charset.StandardCharsets;
 
 public class MobiAdapter {
 
-	private static Logger LOG = LoggerFactory.getLogger(MobiAdapter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MobiAdapter.class);
 
-	private PalmDataBase pdb;
+	private final PalmDataBase pdb;
 	private MobiHeaderRecord headerRecord;
 	
 	public MobiAdapter(PalmDataBase pdb) {
@@ -32,7 +31,7 @@ public class MobiAdapter {
 		return headerRecord;
 	}
 	
-	public MobiBookInfo getBookInfo() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+	public MobiBookInfo getBookInfo() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		return new MobiBookInfo(headerRecord);
 	}
 	
@@ -88,7 +87,7 @@ public class MobiAdapter {
 			// ignored, always 0
 			dis.skipBytes(2);
 			
-			String magic = ByteIO.readFixedLengthString(dis, 4, Charset.forName("ASCII"));
+			String magic = ByteIO.readFixedLengthString(dis, 4, StandardCharsets.US_ASCII);
 			if(!"MOBI".equals(magic)) {
 				throw new IllegalArgumentException("Wrong magic in record: " + magic);
 			}
