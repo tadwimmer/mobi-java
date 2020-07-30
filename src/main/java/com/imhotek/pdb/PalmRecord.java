@@ -1,4 +1,4 @@
-package hu.webhejj.pdb;
+package com.imhotek.pdb;
 
 public class PalmRecord {
 

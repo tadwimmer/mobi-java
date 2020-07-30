@@ -1,4 +1,4 @@
-package hu.webhejj.pdb.mobi;
+package com.imhotek.pdb.mobi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

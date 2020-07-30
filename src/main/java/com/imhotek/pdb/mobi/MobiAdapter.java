@@ -1,17 +1,24 @@
-package hu.webhejj.pdb.mobi;
+package com.imhotek.pdb.mobi;
 
+import com.imhotek.pdb.PalmDataBase;
+import com.imhotek.pdb.mobi.MobiHeaderRecord.Compression;
+import com.imhotek.pdb.mobi.MobiHeaderRecord.Encryption;
+import com.imhotek.pdb.mobi.MobiHeaderRecord.MobiType;
+import com.imhotek.pdb.mobi.MobiHeaderRecord.TextEncoding;
 import hu.webhejj.commons.io.SeekableByteArrayInputStream;
-import hu.webhejj.pdb.PalmDataBase;
-import hu.webhejj.pdb.mobi.MobiHeaderRecord.Compression;
-import hu.webhejj.pdb.mobi.MobiHeaderRecord.Encryption;
-import hu.webhejj.pdb.mobi.MobiHeaderRecord.MobiType;
-import hu.webhejj.pdb.mobi.MobiHeaderRecord.TextEncoding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 
+import static com.imhotek.pdb.Constants.*;
+
 public class MobiAdapter {
+
+	private static Logger LOG = LoggerFactory.getLogger(MobiAdapter.class);
 
 	private PalmDataBase pdb;
 	private MobiHeaderRecord headerRecord;
@@ -25,54 +32,8 @@ public class MobiAdapter {
 		return headerRecord;
 	}
 	
-	public MobiBookInfo getBookInfo() {
-		
-		Charset charset = headerRecord.getTextEncoding().toCharset();
-
-		MobiBookInfo mobiBookInfo = new MobiBookInfo();
-		for(ExtHeader extHeader: headerRecord.getExtHeaders()) {
-			switch(extHeader.getType()) {
-			case 1: mobiBookInfo.setDrmServerId(new String(extHeader.getValue(), charset)); break;
-			case 2:mobiBookInfo.setDrmCommerceId(new String(extHeader.getValue(), charset)); break;
-			case 3: mobiBookInfo.setDrmEbookBaseBookId(new String(extHeader.getValue(), charset)); break;
-			case 100: mobiBookInfo.setAuthor(new String(extHeader.getValue(), charset)); break;
-			case 101: mobiBookInfo.setPublisher(new String(extHeader.getValue(), charset)); break;
-			case 102: mobiBookInfo.setImprint(new String(extHeader.getValue(), charset)); break;
-			case 103: mobiBookInfo.setDescription(new String(extHeader.getValue(), charset)); break;
-			case 104: mobiBookInfo.setIsbn(new String(extHeader.getValue(), charset)); break;
-			case 105: mobiBookInfo.setSubject(new String(extHeader.getValue(), charset)); break;
-			case 106: mobiBookInfo.setPublishingDate(new String(extHeader.getValue(), charset)); break;
-			case 107: mobiBookInfo.setReview(new String(extHeader.getValue(), charset)); break;
-			case 108: mobiBookInfo.setContributor(new String(extHeader.getValue(), charset)); break;
-			case 109: mobiBookInfo.setRights(new String(extHeader.getValue(), charset)); break;
-			case 110: mobiBookInfo.setSubjectCode(new String(extHeader.getValue(), charset)); break;
-			case 111: mobiBookInfo.setType(new String(extHeader.getValue(), charset)); break;
-			case 112: mobiBookInfo.setSource(new String(extHeader.getValue(), charset)); break;
-			case 113: mobiBookInfo.setAsin(new String(extHeader.getValue(), charset)); break;
-			case 114: mobiBookInfo.setVersionNumber(new String(extHeader.getValue(), charset)); break;
-			case 115: mobiBookInfo.setSample(new String(extHeader.getValue(), charset)); break;
-			case 116: mobiBookInfo.setStartReading(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			case 117: mobiBookInfo.setAdult("yes".equals(new String(extHeader.getValue(), charset))); break;
-			case 118: mobiBookInfo.setRetailPrice(new String(extHeader.getValue(), charset)); break;
-			case 119: mobiBookInfo.setRetailPriceCurrency(new String(extHeader.getValue(), charset)); break;
-			
-			case 201: mobiBookInfo.setCoverImageIndex(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			case 202: mobiBookInfo.setThumImageIndex(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			case 203: mobiBookInfo.setHasFakecover(ByteIO.readInt(extHeader.getValue(), 0) > 0); break;
-			
-			case 204: mobiBookInfo.setCreatorSoftware(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			case 205: mobiBookInfo.setCreatorMajorVersion(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			case 206: mobiBookInfo.setCreatorMinorVersion(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			case 207: mobiBookInfo.setCreatorBuildNumber(ByteIO.readInt(extHeader.getValue(), 0)); break;
-			
-			case 502: mobiBookInfo.setLastUpdatetime(new String(extHeader.getValue(), charset)); break;
-			case 503: mobiBookInfo.setUpdatedTitle(new String(extHeader.getValue(), charset)); break;
-			
-			default: System.out.println("Unknown ext header: " + extHeader.getType());
-			}
-		}
-		
-		return mobiBookInfo;
+	public MobiBookInfo getBookInfo() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+		return new MobiBookInfo(headerRecord);
 	}
 	
 	public String getTextContents() {

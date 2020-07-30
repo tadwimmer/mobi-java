@@ -1,4 +1,4 @@
-package hu.webhejj.pdb.mobi;
+package com.imhotek.pdb.mobi;
 
 public class ExtHeader {
 	
